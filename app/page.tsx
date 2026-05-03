@@ -36,6 +36,8 @@ import {
 } from "@/lib/site-utils";
 import clsx from "clsx";
 
+type NavCategory = SiteCategory | "全部";
+
 const categoryIcon: Record<SiteCategory, React.ElementType> = {
   学习资源: BookOpen,
   AI工具: Brain,
@@ -45,6 +47,18 @@ const categoryIcon: Record<SiteCategory, React.ElementType> = {
   娱乐信息: Tv,
   外网精选: Globe2,
   小众神器: Sparkles
+};
+
+const categorySectionId: Record<NavCategory, string> = {
+  全部: "page-top",
+  学习资源: "category-study",
+  AI工具: "category-ai",
+  实用工具: "category-tools",
+  开发者专区: "category-developer",
+  设计资源: "category-design",
+  娱乐信息: "category-media",
+  外网精选: "category-global",
+  小众神器: "category-niche"
 };
 
 const storageKeys = {
@@ -72,7 +86,7 @@ function writeList(key: string, value: string[]) {
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<SiteCategory | "全部">("全部");
+  const [activeCategory, setActiveCategory] = useState<NavCategory>("全部");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [quick, setQuick] = useState<string[]>(defaultQuick);
@@ -160,8 +174,22 @@ export default function HomePage() {
     if (exact) openSite(exact);
   }
 
+  function scrollToCategory(category: NavCategory) {
+    setActiveCategory(category);
+
+    window.setTimeout(() => {
+      const target =
+        document.getElementById(categorySectionId[category]) ??
+        document.getElementById("category-directory");
+      target?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
+  }
+
   return (
-    <main className="min-h-screen bg-mist text-ink transition-colors dark:bg-zinc-950 dark:text-zinc-50">
+    <main
+      id={categorySectionId["全部"]}
+      className="min-h-screen bg-mist text-ink transition-colors dark:bg-zinc-950 dark:text-zinc-50"
+    >
       <header className="sticky top-0 z-30 border-b border-line bg-white/86 backdrop-blur-xl dark:bg-zinc-950/86">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <button
@@ -236,7 +264,7 @@ export default function HomePage() {
             return (
               <button
                 key={category}
-                onClick={() => setActiveCategory(category)}
+                onClick={() => scrollToCategory(category)}
                 className={clsx(
                   "focus-ring inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-3 text-sm transition",
                   activeCategory === category
@@ -259,6 +287,7 @@ export default function HomePage() {
         />
 
         <SpotlightSection
+          id={categorySectionId["AI工具"]}
           title="AI 工具专栏"
           eyebrow="高频刚需"
           icon={Brain}
@@ -271,6 +300,7 @@ export default function HomePage() {
         />
 
         <SpotlightSection
+          id={categorySectionId["外网精选"]}
           title="外网精选"
           eyebrow="可用性标注"
           icon={Globe2}
@@ -283,6 +313,7 @@ export default function HomePage() {
         />
 
         <SpotlightSection
+          id={categorySectionId["小众神器"]}
           title="小众神器"
           eyebrow="冷门但好用"
           icon={Wand2}
@@ -295,7 +326,7 @@ export default function HomePage() {
           showReason
         />
 
-        <section className="mt-10">
+        <section id="category-directory" className="mt-10 scroll-mt-28">
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -312,7 +343,11 @@ export default function HomePage() {
             {groupByCategory(filteredSites).map((group) => {
               const Icon = categoryIcon[group.category];
               return (
-                <div key={group.category} id={group.category}>
+                <div
+                  key={group.category}
+                  id={categorySectionId[group.category]}
+                  className="scroll-mt-28"
+                >
                   <div className="mb-3 flex items-center gap-2">
                     <span className="grid h-8 w-8 place-items-center rounded-lg bg-white text-zinc-700 ring-1 ring-line dark:bg-zinc-900 dark:text-zinc-200">
                       <Icon className="h-4 w-4" />
@@ -417,6 +452,7 @@ function QuickPanel({
 }
 
 function SpotlightSection({
+  id,
   title,
   eyebrow,
   icon: Icon,
@@ -428,6 +464,7 @@ function SpotlightSection({
   onQuick,
   showReason = false
 }: {
+  id: string;
   title: string;
   eyebrow: string;
   icon: React.ElementType;
@@ -440,7 +477,7 @@ function SpotlightSection({
   showReason?: boolean;
 }) {
   return (
-    <section className="mt-10">
+    <section id={id} className="mt-10 scroll-mt-28">
       <div className="mb-4 flex items-center gap-2">
         <span className="grid h-9 w-9 place-items-center rounded-lg bg-white text-zinc-700 ring-1 ring-line dark:bg-zinc-900 dark:text-zinc-200">
           <Icon className="h-4 w-4" />
