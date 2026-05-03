@@ -18,7 +18,6 @@ import {
   Palette,
   Plus,
   Search,
-  Send,
   Sparkles,
   Star,
   Sun,
@@ -78,9 +77,6 @@ export default function HomePage() {
   const [recent, setRecent] = useState<string[]>([]);
   const [quick, setQuick] = useState<string[]>(defaultQuick);
   const [dark, setDark] = useState(false);
-  const [submitOpen, setSubmitOpen] = useState(false);
-  const [submitState, setSubmitState] = useState({ name: "", url: "", reason: "" });
-  const [toast, setToast] = useState("");
 
   useEffect(() => {
     setFavorites(readList(storageKeys.favorites, []));
@@ -95,12 +91,6 @@ export default function HomePage() {
     document.documentElement.classList.toggle("dark", dark);
     window.localStorage.setItem(storageKeys.theme, dark ? "dark" : "light");
   }, [dark]);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = window.setTimeout(() => setToast(""), 1800);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
 
   const filteredSites = useMemo(() => {
     const categoryFiltered =
@@ -170,23 +160,6 @@ export default function HomePage() {
     if (exact) openSite(exact);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const response = await fetch("/api/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(submitState)
-    });
-
-    if (response.ok) {
-      setSubmitState({ name: "", url: "", reason: "" });
-      setSubmitOpen(false);
-      setToast("投稿已收到");
-    } else {
-      setToast("投稿信息不完整");
-    }
-  }
-
   return (
     <main className="min-h-screen bg-mist text-ink transition-colors dark:bg-zinc-950 dark:text-zinc-50">
       <header className="sticky top-0 z-30 border-b border-line bg-white/86 backdrop-blur-xl dark:bg-zinc-950/86">
@@ -210,7 +183,9 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <button
               className="focus-ring grid h-9 w-9 place-items-center rounded-lg border border-line bg-white text-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
-              onClick={() => setSubmitOpen(true)}
+              onClick={() =>
+                window.open("https://wj.qq.com/s2/26537466/a29d/", "_blank", "noopener,noreferrer")
+              }
               title="投稿"
             >
               <Plus className="h-4 w-4" />
@@ -368,60 +343,6 @@ export default function HomePage() {
         CampusNav 数据可通过 <code className="rounded bg-white px-1.5 py-0.5 dark:bg-zinc-900">/api/sites</code> 访问，后续可接入登录、审核后台和开放 API。
       </footer>
 
-      {submitOpen && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-black/30 px-4 backdrop-blur-sm">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-md rounded-2xl border border-line bg-white p-5 shadow-soft dark:bg-zinc-900"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">推荐一个网站</h2>
-              <button
-                type="button"
-                className="focus-ring rounded-lg px-3 py-1 text-sm text-zinc-500"
-                onClick={() => setSubmitOpen(false)}
-              >
-                关闭
-              </button>
-            </div>
-            <div className="space-y-3">
-              <Input
-                label="名称"
-                value={submitState.name}
-                onChange={(value) => setSubmitState((state) => ({ ...state, name: value }))}
-                placeholder="例如：TinyWow"
-              />
-              <Input
-                label="网址"
-                value={submitState.url}
-                onChange={(value) => setSubmitState((state) => ({ ...state, url: value }))}
-                placeholder="https://..."
-              />
-              <label className="block">
-                <span className="mb-1 block text-sm font-medium">推荐理由</span>
-                <textarea
-                  className="focus-ring min-h-24 w-full resize-none rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none dark:bg-zinc-950"
-                  value={submitState.reason}
-                  onChange={(event) =>
-                    setSubmitState((state) => ({ ...state, reason: event.target.value }))
-                  }
-                  placeholder="它解决了什么具体学生场景？"
-                />
-              </label>
-              <button className="focus-ring inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-ink text-sm font-medium text-white dark:bg-white dark:text-ink">
-                <Send className="h-4 w-4" />
-                提交
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {toast && (
-        <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-sm text-white shadow-soft dark:bg-white dark:text-ink">
-          {toast}
-        </div>
-      )}
     </main>
   );
 }
@@ -636,29 +557,5 @@ function SiteCard({
       </div>
       <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">{site.studentFit}</p>
     </article>
-  );
-}
-
-function Input({
-  label,
-  value,
-  onChange,
-  placeholder
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-sm font-medium">{label}</span>
-      <input
-        className="focus-ring h-10 w-full rounded-lg border border-line bg-white px-3 text-sm outline-none dark:bg-zinc-950"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-      />
-    </label>
   );
 }

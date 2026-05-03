@@ -9,7 +9,7 @@
 - 外网精选：为国外优质工具标注 `国内可用`、`部分可用`、`需要代理`。
 - 小众神器：给冷门但实用的网站提供推荐理由。
 - 个人化：收藏网站、自定义快捷入口、最近访问、深色模式。
-- API：`GET /api/sites` 输出导航数据，`POST /api/submit` 接收用户投稿。
+- API：`GET /api/sites` 输出导航数据；用户投稿通过第三方表单收集。
 
 ## 项目结构
 
@@ -18,7 +18,6 @@ campus-nav/
 ├─ app/
 │  ├─ api/
 │  │  ├─ sites/route.ts       # 导航数据 API
-│  │  └─ submit/route.ts      # 投稿 API 示例
 │  ├─ globals.css             # Tailwind 全局样式
 │  ├─ layout.tsx              # 页面元数据与根布局
 │  └─ page.tsx                # 首页、分类导航、收藏与投稿交互
