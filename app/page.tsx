@@ -37,6 +37,7 @@ import {
 import clsx from "clsx";
 
 type NavCategory = SiteCategory | "全部";
+type SearchEngineId = "google" | "baidu" | "bing" | "github" | "site";
 
 const categoryIcon: Record<SiteCategory, React.ElementType> = {
   学习资源: BookOpen,
@@ -60,6 +61,43 @@ const categorySectionId: Record<NavCategory, string> = {
   外网精选: "category-global",
   小众神器: "category-niche"
 };
+
+const searchEngines: Array<{
+  id: SearchEngineId;
+  label: string;
+  placeholder: string;
+  buildUrl?: (query: string) => string;
+}> = [
+  {
+    id: "google",
+    label: "Google",
+    placeholder: "Google 搜索...",
+    buildUrl: (query) => `https://www.google.com/search?q=${encodeURIComponent(query)}`
+  },
+  {
+    id: "baidu",
+    label: "百度",
+    placeholder: "百度搜索...",
+    buildUrl: (query) => `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`
+  },
+  {
+    id: "bing",
+    label: "Bing",
+    placeholder: "Bing 搜索...",
+    buildUrl: (query) => `https://www.bing.com/search?q=${encodeURIComponent(query)}`
+  },
+  {
+    id: "github",
+    label: "GitHub",
+    placeholder: "搜索 GitHub 项目、代码或开发资源...",
+    buildUrl: (query) => `https://github.com/search?q=${encodeURIComponent(query)}`
+  },
+  {
+    id: "site",
+    label: "站内",
+    placeholder: "搜索站内网址，或输入网址直接打开..."
+  }
+];
 
 const storageKeys = {
   favorites: "campus-nav:favorites",
@@ -86,6 +124,7 @@ function writeList(key: string, value: string[]) {
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
+  const [selectedSearchEngine, setSelectedSearchEngine] = useState<SearchEngineId>("baidu");
   const [activeCategory, setActiveCategory] = useState<NavCategory>("全部");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
@@ -112,8 +151,11 @@ export default function HomePage() {
         ? sites
         : sites.filter((site) => site.category === activeCategory);
 
-    return searchSites(categoryFiltered, query);
-  }, [activeCategory, query]);
+    return searchSites(categoryFiltered, selectedSearchEngine === "site" ? query : "");
+  }, [activeCategory, query, selectedSearchEngine]);
+
+  const selectedEngine =
+    searchEngines.find((engine) => engine.id === selectedSearchEngine) ?? searchEngines[0];
 
   const quickSites = useMemo(
     () => quick.map((id) => sites.find((site) => site.id === id)).filter(Boolean) as Site[],
@@ -163,13 +205,21 @@ export default function HomePage() {
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (isProbablyUrl(query)) {
-      window.open(normalizeUrl(query), "_blank", "noopener,noreferrer");
+    const keyword = query.trim();
+    if (!keyword) return;
+
+    if (selectedEngine.id !== "site" && selectedEngine.buildUrl) {
+      window.open(selectedEngine.buildUrl(keyword), "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    if (isProbablyUrl(keyword)) {
+      window.open(normalizeUrl(keyword), "_blank", "noopener,noreferrer");
       return;
     }
 
     const exact = filteredSites.find(
-      (site) => site.name.toLowerCase() === query.trim().toLowerCase()
+      (site) => site.name.toLowerCase() === keyword.toLowerCase()
     );
     if (exact) openSite(exact);
   }
@@ -243,16 +293,33 @@ export default function HomePage() {
           </p>
 
           <form onSubmit={handleSearch} className="mt-8">
+            <div className="mb-2 flex flex-wrap justify-center gap-1.5">
+              {searchEngines.map((engine) => (
+                <button
+                  key={engine.id}
+                  type="button"
+                  onClick={() => setSelectedSearchEngine(engine.id)}
+                  className={clsx(
+                    "focus-ring h-8 rounded-lg px-3 text-sm font-medium transition",
+                    selectedSearchEngine === engine.id
+                      ? "bg-ink text-white shadow-sm dark:bg-white dark:text-ink"
+                      : "text-zinc-500 hover:bg-white hover:text-ink dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white"
+                  )}
+                >
+                  {engine.label}
+                </button>
+              ))}
+            </div>
             <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-line bg-white px-4 shadow-soft dark:bg-zinc-900">
               <Search className="h-5 w-5 shrink-0 text-zinc-400" />
               <input
                 className="h-14 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-zinc-400"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="搜索 ChatGPT、PDF、GitHub，或输入网址直接打开"
+                placeholder={selectedEngine.placeholder}
               />
               <button className="focus-ring hidden rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-ink sm:inline-flex">
-                打开
+                搜索
               </button>
             </div>
           </form>
