@@ -11,13 +11,18 @@ function openSite(site: Site) {
   window.open(site.url, "_blank", "noopener,noreferrer");
 }
 
+const shortcutKey = "B";
+
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const groupedSites = useMemo(() => groupByCategory(sites), []);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === shortcutKey.toLowerCase()
+      ) {
         event.preventDefault();
         setOpen((value) => !value);
       }
@@ -46,12 +51,12 @@ export function CommandPalette() {
         <Search className="h-5 w-5 shrink-0 text-zinc-400" />
         <CommandPrimitive.Input
           autoFocus
-          placeholder="搜索网站、工具或资源..."
+          placeholder="搜索网站名称、描述或分类..."
           className="h-14 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-zinc-400"
         />
         <div className="hidden items-center gap-1 rounded-lg border border-line bg-zinc-50 px-2 py-1 text-xs text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400 sm:flex">
           <Command className="h-3.5 w-3.5" />
-          K
+          {shortcutKey}
         </div>
       </div>
 
@@ -101,7 +106,7 @@ export function CommandPalette() {
 
       <div className="flex items-center justify-between border-t border-line px-4 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
         <span>↑ ↓ 选择</span>
-        <span>Enter 打开 · Esc 关闭</span>
+        <span>Enter 打开 · Esc 关闭 · Ctrl / ⌘ + {shortcutKey}</span>
       </div>
     </CommandPrimitive.Dialog>
   );
