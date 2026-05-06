@@ -17,6 +17,15 @@ const config: Config = {
       },
       boxShadow: {
         soft: "0 16px 50px rgba(31, 41, 55, 0.08)"
+      },
+      keyframes: {
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(6px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        }
+      },
+      animation: {
+        "fade-in": "fade-in 220ms ease-out both"
       }
     }
   },

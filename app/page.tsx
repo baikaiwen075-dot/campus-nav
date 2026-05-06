@@ -22,15 +22,12 @@ import {
   Sparkles,
   Star,
   Sun,
-  Tv,
-  Wand2
+  Tv
 } from "lucide-react";
 import { sites } from "@/data/sites";
 import type { Site, SiteCategory } from "@/lib/types";
 import {
   accessTone,
-  categoryOrder,
-  groupByCategory,
   isProbablyUrl,
   normalizeUrl,
   searchSites
@@ -53,22 +50,6 @@ const categoryIcon: Record<SiteCategory, React.ElementType> = {
   娱乐信息: Tv,
   外网精选: Globe2,
   小众神器: Sparkles
-};
-
-const categorySectionId: Record<NavCategory, string> = {
-  全部: "page-top",
-  学习资源: "category-study",
-  AI工具: "category-ai",
-  视频娱乐: "category-video",
-  极客基建与社区: "category-infra",
-  常用邮箱: "category-mail",
-  学习与效率: "category-productivity",
-  实用工具: "category-tools",
-  开发者专区: "category-developer",
-  设计资源: "category-design",
-  娱乐信息: "category-media",
-  外网精选: "category-global",
-  小众神器: "category-niche"
 };
 
 const searchEngines: Array<{
@@ -134,7 +115,7 @@ function writeList(key: string, value: string[]) {
 export default function HomePage() {
   const [query, setQuery] = useState("");
   const [selectedSearchEngine, setSelectedSearchEngine] = useState<SearchEngineId>("baidu");
-  const [activeCategory, setActiveCategory] = useState<NavCategory>("全部");
+  const [activeTab, setActiveTab] = useState<NavCategory>("全部");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [quick, setQuick] = useState<string[]>(defaultQuick);
@@ -157,14 +138,32 @@ export default function HomePage() {
     window.localStorage.setItem(storageKeys.theme, dark ? "dark" : "light");
   }, [dark]);
 
-  const filteredSites = useMemo(() => {
-    const categoryFiltered =
-      activeCategory === "全部"
-        ? sites
-        : sites.filter((site) => site.category === activeCategory);
+  const tabCategories = useMemo(
+    () => Array.from(new Set(sites.map((site) => site.category))),
+    []
+  );
 
-    return searchSites(categoryFiltered, selectedSearchEngine === "site" ? query : "");
-  }, [activeCategory, query, selectedSearchEngine]);
+  const tabs = useMemo<NavCategory[]>(() => ["全部", ...tabCategories], [tabCategories]);
+
+  const filteredSites = useMemo(() => {
+    const tabFiltered =
+      activeTab === "全部"
+        ? sites
+        : sites.filter((site) => site.category === activeTab);
+
+    return searchSites(tabFiltered, selectedSearchEngine === "site" ? query : "");
+  }, [activeTab, query, selectedSearchEngine]);
+
+  const groupedFilteredSites = useMemo(
+    () =>
+      tabCategories
+        .map((category) => ({
+          category,
+          sites: filteredSites.filter((site) => site.category === category)
+        }))
+        .filter((group) => group.sites.length > 0),
+    [filteredSites, tabCategories]
+  );
 
   const selectedEngine =
     searchEngines.find((engine) => engine.id === selectedSearchEngine) ?? searchEngines[0];
@@ -184,9 +183,12 @@ export default function HomePage() {
     [recent]
   );
 
-  const featuredAI = sites.filter((site) => site.category === "AI工具" && site.featured);
-  const globalPicks = sites.filter((site) => site.category === "外网精选");
-  const nicheTools = sites.filter((site) => site.niche || site.category === "小众神器");
+  const recommendedSites = useMemo(
+    () => sites.filter((site) => site.featured || site.niche).slice(0, 12),
+    []
+  );
+
+  const isSiteSearch = selectedSearchEngine === "site" && query.trim().length > 0;
 
   function rememberVisit(site: Site) {
     const next = [site.id, ...recent.filter((id) => id !== site.id)].slice(0, 8);
@@ -236,28 +238,14 @@ export default function HomePage() {
     if (exact) openSite(exact);
   }
 
-  function scrollToCategory(category: NavCategory) {
-    setActiveCategory(category);
-
-    window.setTimeout(() => {
-      const target =
-        document.getElementById(categorySectionId[category]) ??
-        document.getElementById("category-directory");
-      target?.scrollIntoView({ behavior: "smooth" });
-    }, 0);
-  }
-
   return (
-    <main
-      id={categorySectionId["全部"]}
-      className="min-h-screen bg-mist text-ink transition-colors dark:bg-zinc-950 dark:text-zinc-50"
-    >
+    <main className="min-h-screen bg-mist text-ink transition-colors dark:bg-zinc-950 dark:text-zinc-50">
       <header className="sticky top-0 z-30 border-b border-line bg-white/86 backdrop-blur-xl dark:bg-zinc-950/86">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <button
             className="focus-ring flex items-center gap-2 rounded-lg px-2 py-1 text-left"
             onClick={() => {
-              setActiveCategory("全部");
+              setActiveTab("全部");
               setQuery("");
             }}
           >
@@ -340,26 +328,28 @@ export default function HomePage() {
           </form>
         </div>
 
-        <div className="mt-8 flex gap-2 overflow-x-auto pb-1 thin-scrollbar">
-          {(["全部", ...categoryOrder] as const).map((category) => {
-            const Icon = category === "全部" ? Compass : categoryIcon[category];
+        <nav className="mt-8 border-b border-line">
+          <div className="flex gap-6 overflow-x-auto thin-scrollbar">
+            {tabs.map((tab) => {
+            const Icon = tab === "全部" ? Compass : categoryIcon[tab];
             return (
               <button
-                key={category}
-                onClick={() => scrollToCategory(category)}
+                key={tab}
+                onClick={() => setActiveTab(tab)}
                 className={clsx(
-                  "focus-ring inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border px-3 text-sm transition",
-                  activeCategory === category
-                    ? "border-ink bg-ink text-white dark:border-white dark:bg-white dark:text-ink"
-                    : "border-line bg-white text-zinc-600 hover:text-ink dark:bg-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+                  "focus-ring inline-flex h-11 shrink-0 items-center gap-2 border-b-2 px-0.5 pb-1 text-sm font-medium transition",
+                  activeTab === tab
+                    ? "border-blue-500 text-ink dark:text-white"
+                    : "border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {category}
+                {tab === "全部" ? "全部 Home" : tab}
               </button>
             );
           })}
-        </div>
+          </div>
+        </nav>
 
         <QuickPanel
           quickSites={quickSites}
@@ -368,91 +358,52 @@ export default function HomePage() {
           onOpen={openSite}
         />
 
-        <SpotlightSection
-          id={categorySectionId["AI工具"]}
-          title="AI 工具专栏"
-          eyebrow="高频刚需"
-          icon={Brain}
-          sites={featuredAI}
-          favorites={favorites}
-          quick={quick}
-          onOpen={openSite}
-          onFavorite={toggleFavorite}
-          onQuick={toggleQuick}
-        />
-
-        <SpotlightSection
-          id={categorySectionId["外网精选"]}
-          title="外网精选"
-          eyebrow="可用性标注"
-          icon={Globe2}
-          sites={globalPicks}
-          favorites={favorites}
-          quick={quick}
-          onOpen={openSite}
-          onFavorite={toggleFavorite}
-          onQuick={toggleQuick}
-        />
-
-        <SpotlightSection
-          id={categorySectionId["小众神器"]}
-          title="小众神器"
-          eyebrow="冷门但好用"
-          icon={Wand2}
-          sites={nicheTools}
-          favorites={favorites}
-          quick={quick}
-          onOpen={openSite}
-          onFavorite={toggleFavorite}
-          onQuick={toggleQuick}
-          showReason
-        />
-
-        <section id="category-directory" className="mt-10 scroll-mt-28">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                Directory
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold">分类导航</h2>
-            </div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              {filteredSites.length} 个结果
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {groupByCategory(filteredSites).map((group) => {
-              const Icon = categoryIcon[group.category];
-              return (
-                <div
+        <section key={`${activeTab}-${isSiteSearch ? query : "browse"}`} className="mt-10 animate-fade-in">
+          {activeTab === "全部" && !isSiteSearch ? (
+            <CategoryPanel
+              title="精选推荐"
+              eyebrow="Home"
+              icon={Sparkles}
+              sites={recommendedSites}
+              favorites={favorites}
+              quick={quick}
+              onOpen={openSite}
+              onFavorite={toggleFavorite}
+              onQuick={toggleQuick}
+              showReason
+            />
+          ) : activeTab === "全部" ? (
+            <div className="space-y-8">
+              <ResultHeader title="站内搜索结果" count={filteredSites.length} />
+              {groupedFilteredSites.map((group) => (
+                <CategoryPanel
                   key={group.category}
-                  id={categorySectionId[group.category]}
-                  className="scroll-mt-28"
-                >
-                  <div className="mb-3 flex items-center gap-2">
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-white text-zinc-700 ring-1 ring-line dark:bg-zinc-900 dark:text-zinc-200">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <h3 className="text-lg font-semibold">{group.category}</h3>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {group.sites.map((site) => (
-                      <SiteCard
-                        key={site.id}
-                        site={site}
-                        favorite={favorites.includes(site.id)}
-                        quick={quick.includes(site.id)}
-                        onOpen={openSite}
-                        onFavorite={toggleFavorite}
-                        onQuick={toggleQuick}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  title={group.category}
+                  eyebrow="Search"
+                  icon={categoryIcon[group.category]}
+                  sites={group.sites}
+                  favorites={favorites}
+                  quick={quick}
+                  onOpen={openSite}
+                  onFavorite={toggleFavorite}
+                  onQuick={toggleQuick}
+                />
+              ))}
+            </div>
+          ) : (
+            <CategoryPanel
+              title={activeTab}
+              eyebrow="Category"
+              icon={categoryIcon[activeTab]}
+              sites={filteredSites}
+              favorites={favorites}
+              quick={quick}
+              onOpen={openSite}
+              onFavorite={toggleFavorite}
+              onQuick={toggleQuick}
+              showReason={activeTab === "小众神器"}
+            />
+          )}
         </section>
       </section>
 
@@ -533,8 +484,21 @@ function QuickPanel({
   );
 }
 
-function SpotlightSection({
-  id,
+function ResultHeader({ title, count }: { title: string; count: number }) {
+  return (
+    <div className="flex items-end justify-between gap-4">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Directory
+        </p>
+        <h2 className="mt-1 text-2xl font-semibold">{title}</h2>
+      </div>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">{count} 个结果</p>
+    </div>
+  );
+}
+
+function CategoryPanel({
   title,
   eyebrow,
   icon: Icon,
@@ -546,7 +510,6 @@ function SpotlightSection({
   onQuick,
   showReason = false
 }: {
-  id: string;
   title: string;
   eyebrow: string;
   icon: React.ElementType;
@@ -559,33 +522,42 @@ function SpotlightSection({
   showReason?: boolean;
 }) {
   return (
-    <section id={id} className="mt-10 scroll-mt-28">
-      <div className="mb-4 flex items-center gap-2">
-        <span className="grid h-9 w-9 place-items-center rounded-lg bg-white text-zinc-700 ring-1 ring-line dark:bg-zinc-900 dark:text-zinc-200">
-          <Icon className="h-4 w-4" />
-        </span>
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            {eyebrow}
-          </p>
-          <h2 className="text-xl font-semibold">{title}</h2>
+    <div>
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-white text-zinc-700 ring-1 ring-line dark:bg-zinc-900 dark:text-zinc-200">
+            <Icon className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              {eyebrow}
+            </p>
+            <h2 className="text-xl font-semibold">{title}</h2>
+          </div>
         </div>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">{sectionSites.length} 个结果</p>
       </div>
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {sectionSites.map((site) => (
-          <SiteCard
-            key={`${title}-${site.id}`}
-            site={site}
-            favorite={favorites.includes(site.id)}
-            quick={quick.includes(site.id)}
-            onOpen={onOpen}
-            onFavorite={onFavorite}
-            onQuick={onQuick}
-            showReason={showReason}
-          />
-        ))}
-      </div>
-    </section>
+      {sectionSites.length > 0 ? (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {sectionSites.map((site) => (
+            <SiteCard
+              key={`${title}-${site.id}`}
+              site={site}
+              favorite={favorites.includes(site.id)}
+              quick={quick.includes(site.id)}
+              onOpen={onOpen}
+              onFavorite={onFavorite}
+              onQuick={onQuick}
+              showReason={showReason}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-lg border border-line bg-white p-8 text-center text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+          没有找到匹配的网站
+        </div>
+      )}
+    </div>
   );
 }
 
