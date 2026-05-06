@@ -14,6 +14,7 @@ import {
   Flame,
   Globe2,
   Heart,
+  Mail,
   Moon,
   Palette,
   Plus,
@@ -42,6 +43,10 @@ type SearchEngineId = "google" | "baidu" | "bing" | "github" | "site";
 const categoryIcon: Record<SiteCategory, React.ElementType> = {
   学习资源: BookOpen,
   AI工具: Brain,
+  视频娱乐: Tv,
+  极客基建与社区: Globe2,
+  常用邮箱: Mail,
+  学习与效率: BookOpen,
   实用工具: FileText,
   开发者专区: Code2,
   设计资源: Palette,
@@ -54,6 +59,10 @@ const categorySectionId: Record<NavCategory, string> = {
   全部: "page-top",
   学习资源: "category-study",
   AI工具: "category-ai",
+  视频娱乐: "category-video",
+  极客基建与社区: "category-infra",
+  常用邮箱: "category-mail",
+  学习与效率: "category-productivity",
   实用工具: "category-tools",
   开发者专区: "category-developer",
   设计资源: "category-design",
@@ -130,6 +139,7 @@ export default function HomePage() {
   const [recent, setRecent] = useState<string[]>([]);
   const [quick, setQuick] = useState<string[]>(defaultQuick);
   const [dark, setDark] = useState(false);
+  const [shortcutHint, setShortcutHint] = useState("Ctrl B");
 
   useEffect(() => {
     setFavorites(readList(storageKeys.favorites, []));
@@ -137,7 +147,9 @@ export default function HomePage() {
     setQuick(readList(storageKeys.quick, defaultQuick));
     const savedTheme = window.localStorage.getItem(storageKeys.theme);
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isAppleDevice = /Mac|iPhone|iPad|iPod/i.test(window.navigator.platform);
     setDark(savedTheme ? savedTheme === "dark" : prefersDark);
+    setShortcutHint(isAppleDevice ? "⌘ B" : "Ctrl B");
   }, []);
 
   useEffect(() => {
@@ -318,6 +330,9 @@ export default function HomePage() {
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={selectedEngine.placeholder}
               />
+              <span className="hidden shrink-0 select-none rounded-lg border border-line bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-400 shadow-sm dark:bg-zinc-950 dark:text-zinc-500 sm:inline-flex">
+                {shortcutHint}
+              </span>
               <button className="focus-ring hidden rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-ink sm:inline-flex">
                 搜索
               </button>

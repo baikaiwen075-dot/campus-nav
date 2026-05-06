@@ -3,6 +3,10 @@ import type { Site, SiteCategory } from "@/lib/types";
 export const categoryOrder: SiteCategory[] = [
   "学习资源",
   "AI工具",
+  "视频娱乐",
+  "极客基建与社区",
+  "常用邮箱",
+  "学习与效率",
   "实用工具",
   "开发者专区",
   "设计资源",
