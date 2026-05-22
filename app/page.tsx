@@ -32,6 +32,10 @@ import {
   normalizeUrl,
   searchSites
 } from "@/lib/site-utils";
+import {
+  recordBookmarkLinkClick,
+  useBookmarkLinkEmotions
+} from "@/lib/use-bookmark-link-emotions";
 import clsx from "clsx";
 
 type NavCategory = SiteCategory | "全部";
@@ -97,6 +101,7 @@ const storageKeys = {
 };
 
 const defaultQuick = ["chatgpt", "kimi", "icourse", "github", "ilovepdf", "today-hot"];
+const bookmarkHrefs = sites.map((site) => site.url);
 
 function readList(key: string, fallback: string[]) {
   if (typeof window === "undefined") return fallback;
@@ -121,6 +126,8 @@ export default function HomePage() {
   const [quick, setQuick] = useState<string[]>(defaultQuick);
   const [dark, setDark] = useState(false);
   const [shortcutHint, setShortcutHint] = useState("Ctrl B");
+
+  useBookmarkLinkEmotions(bookmarkHrefs);
 
   useEffect(() => {
     setFavorites(readList(storageKeys.favorites, []));
@@ -197,6 +204,7 @@ export default function HomePage() {
   }
 
   function openSite(site: Site) {
+    recordBookmarkLinkClick(site.url);
     rememberVisit(site);
     window.open(site.url, "_blank", "noopener,noreferrer");
   }
@@ -437,6 +445,7 @@ function QuickPanel({
           {quickSites.map((site) => (
             <button
               key={site.id}
+              data-link-href={site.url}
               onClick={() => onOpen(site)}
               className="focus-ring flex h-14 items-center justify-between rounded-lg border border-line px-3 text-left transition hover:border-zinc-300 dark:hover:border-zinc-700"
             >
@@ -467,6 +476,7 @@ function QuickPanel({
             .map((site) => (
               <button
                 key={site.id}
+                data-link-href={site.url}
                 onClick={() => onOpen(site)}
                 className="focus-ring rounded-lg border border-line px-2.5 py-1.5 text-xs text-zinc-600 hover:text-ink dark:text-zinc-300 dark:hover:text-white"
               >
@@ -583,6 +593,7 @@ function SiteCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <button
+            data-link-href={site.url}
             onClick={() => onOpen(site)}
             className="focus-ring group flex max-w-full items-center gap-1 rounded text-left"
           >

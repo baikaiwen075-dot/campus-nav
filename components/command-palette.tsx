@@ -5,9 +5,11 @@ import { Command as CommandPrimitive } from "cmdk";
 import { ArrowUpRight, Command, Search } from "lucide-react";
 import { sites } from "@/data/sites";
 import { groupByCategory } from "@/lib/site-utils";
+import { recordBookmarkLinkClick } from "@/lib/use-bookmark-link-emotions";
 import type { Site } from "@/lib/types";
 
 function openSite(site: Site) {
+  recordBookmarkLinkClick(site.url);
   window.open(site.url, "_blank", "noopener,noreferrer");
 }
 
