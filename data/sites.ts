@@ -190,6 +190,30 @@ export const sites: Site[] = [
     studentFit: "作业提交、简历处理"
   },
   {
+    id: "ip-split-tunnel",
+    name: "IP 分流测试",
+    url: "https://ip.skk.moe/split-tunnel",
+    category: "实用工具",
+    group: "网络检测",
+    tags: ["IP", "分流", "检测"],
+    region: "国外",
+    access: "国内可用",
+    description: "检测当前网络在不同服务下的 IP 出口和分流情况。",
+    studentFit: "网络环境排查、代理分流验证"
+  },
+  {
+    id: "pingip",
+    name: "Ping IP 检测",
+    url: "https://pingip.cn",
+    category: "实用工具",
+    group: "网络检测",
+    tags: ["Ping", "IP", "检测"],
+    region: "国内",
+    access: "国内可用",
+    description: "在线检测 IP 连通性、延迟和基础网络状态。",
+    studentFit: "网络延迟测试、故障排查"
+  },
+  {
     id: "snapdrop",
     name: "Snapdrop",
     url: "https://snapdrop.net",
