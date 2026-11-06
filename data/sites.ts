@@ -487,6 +487,18 @@ export const sites: Site[] = [
     studentFit: "课程通知、账号注册、日常邮件"
   },
   {
+    id: "educoder",
+    name: "头歌平台",
+    url: "https://www.educoder.net/",
+    category: "学习与效率",
+    group: "实践教学",
+    tags: ["编程", "实训", "课程"],
+    region: "国内",
+    access: "国内可用",
+    description: "在线实践教学平台，提供编程实训和课程学习资源。",
+    studentFit: "课程实训、编程练习"
+  },
+  {
     id: "leetcode-cn",
     name: "力扣",
     url: "https://leetcode.cn/",
