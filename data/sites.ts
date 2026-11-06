@@ -202,6 +202,18 @@ export const sites: Site[] = [
     studentFit: "网络环境排查、代理分流验证"
   },
   {
+    id: "claude-ip-check",
+    name: "Claude IP 检测",
+    url: "https://ip.net.coffee/claude/",
+    category: "实用工具",
+    group: "网络检测",
+    tags: ["Claude", "IP", "检测"],
+    region: "国外",
+    access: "部分可用",
+    description: "用于检测 Claude 相关网络访问情况的工具。",
+    studentFit: "Claude 网络环境检查"
+  },
+  {
     id: "pingip",
     name: "Ping IP 检测",
     url: "https://pingip.cn",
