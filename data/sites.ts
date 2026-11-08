@@ -379,6 +379,18 @@ export const sites: Site[] = [
     studentFit: "报告写作、中文资料整理"
   },
   {
+    id: "yingzhikong",
+    name: "樱之空动漫基地",
+    url: "https://skr.skr1.cc:666",
+    category: "视频娱乐",
+    group: "动漫",
+    tags: ["动漫", "动画", "视频"],
+    region: "国内",
+    access: "部分可用",
+    description: "动漫视频在线观看网站。",
+    studentFit: "课余观看动漫"
+  },
+  {
     id: "youtube",
     name: "YouTube",
     url: "https://www.youtube.com/",
