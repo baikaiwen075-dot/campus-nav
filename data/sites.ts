@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "muse-ai",
+    name: "muse.ai",
+    url: "https://muse.ai/",
+    category: "AI工具",
+    group: "AI视频",
+    tags: ["AI", "视频", "搜索"],
+    region: "国外",
+    access: "部分可用",
+    description: "支持视频托管和 AI 视频搜索的平台。",
+    studentFit: "课程视频分享、视频内容检索"
+  },
+  {
     id: "chatgpt",
     name: "ChatGPT",
     url: "https://chat.openai.com",
@@ -212,6 +224,18 @@ export const sites: Site[] = [
     access: "部分可用",
     description: "用于检测 Claude 相关网络访问情况的工具。",
     studentFit: "Claude 网络环境检查"
+  },
+  {
+    id: "ping0",
+    name: "Ping0",
+    url: "https://ping0.cc/",
+    category: "实用工具",
+    group: "网络检测",
+    tags: ["IP", "网络", "检测"],
+    region: "国外",
+    access: "部分可用",
+    description: "提供 IP 和网络信息查询的在线工具。",
+    studentFit: "IP 信息查询、网络环境排查"
   },
   {
     id: "pingip",
@@ -485,6 +509,18 @@ export const sites: Site[] = [
     access: "需要代理",
     description: "Google 邮箱服务，适合海外工具注册、学术通讯和订阅管理。",
     studentFit: "海外账号注册、论文通讯、邮件归档"
+  },
+  {
+    id: "bai28-mail",
+    name: "Bai28 邮箱",
+    url: "https://mail.bai28.de5.net/",
+    category: "常用邮箱",
+    group: "邮箱",
+    tags: ["邮箱", "邮件"],
+    region: "国外",
+    access: "部分可用",
+    description: "在线邮箱服务入口。",
+    studentFit: "邮件收发、日常通讯"
   },
   {
     id: "qq-mail",
