@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "freepi-bots",
+    name: "FreePi Bots",
+    url: "https://bots.freepi.ai/app/",
+    category: "AI工具",
+    group: "AI对话",
+    tags: ["AI", "对话"],
+    region: "国外",
+    access: "部分可用",
+    description: "AI 对话工具。",
+    studentFit: "学习问答、灵感发散"
+  },
+  {
     id: "muse-ai",
     name: "muse.ai",
     url: "https://muse.ai/",
