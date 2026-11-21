@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "cloudflare-service",
+    name: "Cloudflare Service",
+    url: "https://test.bai27.de5.net",
+    category: "实用工具",
+    group: "网络工具",
+    tags: ["Cloudflare", "工具"],
+    region: "国外",
+    access: "部分可用",
+    description: "Cloudflare Service 网站。",
+    studentFit: "网络工具"
+  },
+  {
     id: "freepi-bots",
     name: "FreePi Bots",
     url: "https://bots.freepi.ai/app/",
