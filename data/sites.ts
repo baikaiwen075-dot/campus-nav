@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "us-address-generator",
+    name: "美国地址生成器",
+    url: "https://www.meiguodizhi.com/",
+    category: "实用工具",
+    group: "在线工具",
+    tags: ["美国", "地址", "生成器"],
+    region: "国外",
+    access: "部分可用",
+    description: "生成美国地址的在线工具。",
+    studentFit: "测试数据、地址格式参考"
+  },
+  {
     id: "cloudflare-service",
     name: "Cloudflare Service",
     url: "https://test.bai27.de5.net",
