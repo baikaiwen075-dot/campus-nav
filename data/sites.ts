@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "desktop-commander",
+    name: "Desktop Commander",
+    url: "https://mcp.desktopcommander.app/",
+    category: "开发者专区",
+    group: "AI开发工具",
+    tags: ["AI", "MCP", "远程控制"],
+    region: "国外",
+    access: "部分可用",
+    description: "通过 MCP 连接 AI 助手与电脑，操作文件和终端。",
+    studentFit: "开发辅助、文件管理、远程操作"
+  },
+  {
     id: "us-address-generator",
     name: "美国地址生成器",
     url: "https://www.meiguodizhi.com/",
