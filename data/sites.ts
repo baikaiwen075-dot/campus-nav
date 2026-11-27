@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "prompts-chat",
+    name: "免费AI提示库",
+    url: "https://prompts.chat/",
+    category: "开发者专区",
+    group: "AI开发工具",
+    tags: ["AI", "提示词", "资源库"],
+    region: "国外",
+    access: "部分可用",
+    description: "AI 提示词资源库。",
+    studentFit: "提示词参考、AI 应用探索"
+  },
+  {
     id: "desktop-commander",
     name: "Desktop Commander",
     url: "https://mcp.desktopcommander.app/",
