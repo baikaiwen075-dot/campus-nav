@@ -3,7 +3,7 @@ import type { Site } from "@/lib/types";
 export const sites: Site[] = [
   {
     id: "prompts-chat",
-    name: "免费AI提示库",
+    name: "免费AI提示词库",
     url: "https://prompts.chat/",
     category: "开发者专区",
     group: "AI开发工具",
