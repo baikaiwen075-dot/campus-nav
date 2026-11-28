@@ -2,6 +2,18 @@ import type { Site } from "@/lib/types";
 
 export const sites: Site[] = [
   {
+    id: "nodeloc",
+    name: "NodeLoc",
+    url: "https://www.nodeloc.com/",
+    category: "极客基建与社区",
+    group: "技术社区",
+    tags: ["社区", "技术", "极客"],
+    region: "国外",
+    access: "部分可用",
+    description: "技术交流社区。",
+    studentFit: "技术交流、经验分享"
+  },
+  {
     id: "prompts-chat",
     name: "免费AI提示词库",
     url: "https://prompts.chat/",
